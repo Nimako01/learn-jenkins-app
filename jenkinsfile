@@ -1,27 +1,27 @@
 pipeline {
     agent any
 
-    // stages {
-    //     // Install dependencies and build the project
-    //     stage('Build') {
-    //         agent {
-    //             docker{
-    //                 image 'node:18-alpine'
-    //                 reuseNode true
-    //             }
-    //         }
-    //         steps {
-    //             // Use sh to run shell commands inside the Docker container
-    //             sh '''
-    //             ls -la
-    //             node --version  
-    //             npm --version
-    //             npm ci
-    //             npm run build
-    //             ls -la
-    //             '''
-    //         }
-    //     }
+    stages {
+        // Install dependencies and build the project
+        stage('Build') {
+            agent {
+                docker{
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                // Use sh to run shell commands inside the Docker container
+                sh '''
+                ls -la
+                node --version  
+                npm --version
+                npm ci
+                npm run build
+                ls -la
+                '''
+            }
+        }
         stage('Test'){
             // Run tests inside a Docker container
             agent {
@@ -69,4 +69,4 @@ pipeline {
             archiveArtifacts artifacts: 'build/**', fingerprint: true
         }
     }
-
+}
