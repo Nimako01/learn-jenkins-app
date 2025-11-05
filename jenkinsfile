@@ -39,6 +39,23 @@ pipeline {
 
             }
         }
+
+                stage('E2E'){
+            // Run tests inside a Docker container
+            agent {
+                docker{
+                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                    reuseNode true
+                }
+            }
+            steps {
+                // Verify build output and run tests
+                sh '''
+                   
+                '''
+
+            }
+        }
     }
 
     post {
