@@ -29,8 +29,8 @@ pipeline {
             }
             steps {
                 sh '''
-                test -f build/index.html   //verify if file exist
-
+                    test -f build/index.html
+                    npm run test
                 '''
 
             }
