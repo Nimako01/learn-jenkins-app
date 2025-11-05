@@ -44,7 +44,7 @@ pipeline {
             // Run tests inside a Docker container
             agent {
                 docker{
-                    image 'mcr.microsoft.com/playwright::v1.56.1-noble'
+                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
                     reuseNode true
                     args '-u root:root '
 
