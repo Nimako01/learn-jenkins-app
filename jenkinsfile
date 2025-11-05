@@ -44,15 +44,17 @@ pipeline {
             // Run tests inside a Docker container
             agent {
                 docker{
-                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                    image 'mcr.microsoft.com/playwright::v1.56.1-jammy'
                     reuseNode true
+                    args '-u root:root '
+
                 }
             }
             steps {
                 // Verify build output and run tests
                 sh '''
                     npm install -g serve
-                    serve -s build
+                    node_modules/.bin/serve -s build
                     npx playwright test 
                 '''
 
