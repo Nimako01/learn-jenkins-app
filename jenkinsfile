@@ -25,7 +25,7 @@ pipeline {
         */
 
         stage('Tests') {
-            parrallel {
+            parallel {
                 stage('Test') {
                     agent {
                         docker {
@@ -54,7 +54,7 @@ pipeline {
                         sh '''
                             npm install serve
                             node_modules/.bin/serve -s build &
-                            sleep 10
+                            sleep 2
                             npx playwright test --reporter=html
                         '''
                     }
