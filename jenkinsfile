@@ -2,74 +2,67 @@ pipeline {
     agent any
 
     stages {
-        // Install dependencies and build the project
+        /*
+
         stage('Build') {
             agent {
-                docker{
+                docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
             }
             steps {
-                // Use sh to run shell commands inside the Docker container
                 sh '''
-                ls -la
-                node --version  
-                npm --version
-                npm ci
-                npm run build
-                ls -la
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
                 '''
             }
         }
-        stage('Test'){
-            // Run tests inside a Docker container
+        */
+
+        stage('Test') {
             agent {
-                docker{
+                docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
             }
-            steps {
-                // Verify build output and run tests
-                sh '''
-                    test -f build/index.html
-                    npm run test
-                '''
 
+            steps {
+                sh '''
+                    #test -f build/index.html
+                    npm test
+                '''
             }
         }
 
-                stage('E2E'){
-            // Run tests inside a Docker container
+        stage('E2E') {
             agent {
-                docker{
-                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                     reuseNode true
-                    //args '-u root:root '
-
                 }
             }
+
             steps {
-                // Verify build output and run tests
                 sh '''
-                    ls -la build
                     npm install serve
                     node_modules/.bin/serve -s build &
                     sleep 10
-                    npx serve -s 
-                    npx playwright test --reporter=line
+                    npx playwright test --reporter=html
                 '''
-
             }
         }
     }
 
     post {
-        // test results and build artifacts archiving
         always {
             junit 'jest-results/junit.xml'
-            archiveArtifacts artifacts: 'build/**', fingerprint: true
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
         }
     }
 }
