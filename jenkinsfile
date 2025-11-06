@@ -54,6 +54,7 @@ pipeline {
                 // Verify build output and run tests
                 sh '''
                     npm ci
+                    npm run build
                     npx serve -s build --no-clipboard &
                     sleep 5
                     npx playwright test 
