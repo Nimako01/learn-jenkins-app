@@ -130,28 +130,8 @@ pipeline {
                 }
             }
         }
-        
-        stage('Deploy prod') {
-            agent {
-                docker {
-                    image 'node:18'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                echo "Current PATH in Deploy stage:"
-                echo $PATH | tr ':' '\n'
-                npm install netlify-cli@23.10.0
-                node_modules/.bin/netlify --version
-                echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                node_modules/.bin/netlify status
-                node_modules/.bin/netlify deploy --dir=build --prod
-                '''
-            }
-        }
 
-        stage('Prod EZE Production') { // Renamed for clarity to avoid duplicate name
+        stage('Deploy prod') { // Renamed for clarity to avoid duplicate name
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -165,6 +145,12 @@ pipeline {
 
             steps {
                 sh '''
+                node --version
+                npm install netlify-cli@23.10.0
+                node_modules/.bin/netlify --version
+                echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                node_modules/.bin/netlify status
+                node_modules/.bin/netlify deploy --dir=build --prod
                 npx playwright test --reporter=html
                 '''
             }
