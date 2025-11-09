@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        NETLIFY_SITE_ID = 'b62f5424-f0d0-4e80-ae05-96ae85989e70'
+        NETLIFY_SITE_ID = '24a7a759-f555-4408-acd3-a85a833c9457'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
 
@@ -128,7 +128,7 @@ pipeline {
             }
 
             environment {
-                CI_ENVIRONMENT_URL = 'https://eunikom-hub-pro.netlify.app'
+                CI_ENVIRONMENT_URL = 'https://eunikom-hub.netlify.app'
             }
 
             steps {
