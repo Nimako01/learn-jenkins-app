@@ -4,7 +4,7 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = '24a7a759-f555-4408-acd3-a85a833c9457'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
-}
+    }
 
     stages {
         stage('Build') {
@@ -83,19 +83,21 @@ pipeline {
                 }
             }
             steps {
-                    sh '''
+                sh '''
                     npm install netlify-cli@23.10.0 node-jq
                     node_modules/.bin/netlify --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                    '''
+                '''
                 script {
-                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
+                    // Trimming the output to remove newline characters is a good practice here
+                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
                 }
             }
         }
-        stage('Prod EZE') {
+
+        stage('Prod EZE Staging') { // Renamed for clarity to avoid duplicate name
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -103,30 +105,32 @@ pipeline {
                 }
             }
 
-                environment {
-                    CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
-                }
+            environment {
+                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+            }
 
-                steps {
-                    sh '''
+            steps {
+                sh '''
                     npx playwright test --reporter=html
-                    '''
-                }
-                post {
-                    always {
-                        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
-                    }
+                '''
+            }
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
                 }
             }
-        }
+        } 
+        
+        // NO BRACE WAS ADDED HERE!
 
         stage('Approval') {
             steps {
                 timeout(time: 15, unit: 'MINUTES') {
-                input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure'
+                    input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure'
                 }
             }
         }
+        
         stage('Deploy prod') {
             agent {
                 docker {
@@ -147,7 +151,7 @@ pipeline {
             }
         }
 
-        stage('Prod EZE') {
+        stage('Prod EZE Production') { // Renamed for clarity to avoid duplicate name
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -156,7 +160,7 @@ pipeline {
             }
 
             environment {
-            CI_ENVIRONMENT_URL = 'https://eunikom-hub.netlify.app'
+                CI_ENVIRONMENT_URL = 'https://eunikom-hub.netlify.app'
             }
 
             steps {
@@ -170,5 +174,5 @@ pipeline {
                 }
             }
         }
-    }
-
+    } // END OF MAIN STAGES BLOCK
+} // END OF PIPELINE BLOCK
