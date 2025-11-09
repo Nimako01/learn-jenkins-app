@@ -92,16 +92,10 @@ pipeline {
                 '''
             }
         }
-                stage('Approval') {
-            agent {
-                docker {
-                    image 'node:18'
-                    reuseNode true
-                }
-            }
+               stage('Approval') {
             steps {
                 timeout(15) {
-                    input 'Do you wish to deploy to production?'
+                    input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure'
                 }
             }
         }
