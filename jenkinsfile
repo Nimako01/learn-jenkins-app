@@ -75,7 +75,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Deploy staging') { // Renamed for clarity to avoid duplicate name
             agent {
                 docker {
