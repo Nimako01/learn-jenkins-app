@@ -60,7 +60,7 @@ pipeline {
                 stage('E2E') {
                     agent {
                         docker {
-                            image 'my'
+                            image 'my-laywright'
                             reuseNode true
                         }
                     }
