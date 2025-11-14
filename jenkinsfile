@@ -10,7 +10,7 @@ pipeline {
     stages('Docker') {
         steps{
             sh 'docker build -t playerwright.'
-        }A
+        }
     }
 
     stages {
